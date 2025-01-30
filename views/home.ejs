@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Code Editor</title>
+	<link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body class="h-screen w-full flex flex-col justify-center items-center bg-neutral-800 text-gray-300">
+    <div class="flex flex-col bg-neutral-900 px-6 py-9 rounded-md w-full max-w-xs">
+        <img class="h-20 w-20 m-auto" src="/assets/images/logo.ico" alt="logo">
+		<h2 class="text-center text-2xl font-bold">
+			Live Code Editor
+		</h2>
+		<div class="mt-9 flex flex-col gap-2">
+			<input class="p-2 rounded bg-gray-800 text-gray-200 focus:outline-none" id="username" type="text" placeholder="Enter your name" required>
+			<input class="p-2 rounded bg-gray-800 text-gray-200 focus:outline-none" id="room-id" type="text" placeholder="Enter Room ID" required>
+			<button class="py-2 px-4 mt-2 bg-emerald-700 hover:bg-emerald-800 rounded" onclick="joinRoom()">Join / Create Room</button>
+		</div>
+    </div>
+
+    <script>
+        function filterInput(id) {
+            document.getElementById(id).addEventListener("input", function(event) {
+                this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+            });
+        }
+        filterInput("username");
+        filterInput("room-id");
+        function joinRoom() {
+            const username = document.getElementById("username").value;
+            const roomId = document.getElementById("room-id").value;
+            const usernameRegex = /^[a-zA-Z0-9]{4,12}$/;
+            const roomIdRegex = /^[a-zA-Z0-9]{8,16}$/;
+
+            if (username && roomId && usernameRegex.test(username) && roomIdRegex.test(roomId)) {
+                window.location.href = `/room/${roomId}/${username}`;
+            } else {
+                alert("Please enter valid inputs:\n- Username: 4-12 characters, only letters and numbers\n- Room ID: 8-16 characters, only letters and numbers");
+            }
+        }
+    </script>
+</body>
+</html>
