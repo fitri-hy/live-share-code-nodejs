@@ -19,6 +19,17 @@
 			<button class="py-2 px-4 mt-2 bg-emerald-700 hover:bg-emerald-800 rounded" onclick="joinRoom()">Join / Create Room</button>
 		</div>
     </div>
+	
+	<div id="error-modal" class="hidden h-full w-full fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
+		<div class="flex flex-col w-full max-w-sm bg-neutral-900 px-6 py-16 rounded-lg rounded-lg">
+			<img class="h-28 w-28 m-auto" src="/assets/images/danger.webp" alt="danger">
+			<h2 class="text-2xl font-bold text-center mt-4 text-gray-300">Error</h2>
+			<p id="error-message" class="mt-2 text-center max-w-xs text-gray-300"></p>
+			<div class="flex justify-center items-center w-full">
+				<button class="mt-9 px-6 bg-rose-700 hover:bg-rose-800 py-2 rounded" onclick="closeModal()">OK, Got it</button>
+			</div>
+		</div>
+	</div>
 
     <script>
         function filterInput(id) {
@@ -28,18 +39,50 @@
         }
         filterInput("username");
         filterInput("room-id");
-        function joinRoom() {
-            const username = document.getElementById("username").value;
-            const roomId = document.getElementById("room-id").value;
+
+        async function joinRoom() {
+            const username = document.getElementById("username").value.trim();
+            const roomId = document.getElementById("room-id").value.trim();
             const usernameRegex = /^[a-zA-Z0-9]{4,12}$/;
             const roomIdRegex = /^[a-zA-Z0-9]{8,16}$/;
 
             if (username && roomId && usernameRegex.test(username) && roomIdRegex.test(roomId)) {
-                window.location.href = `/room/${roomId}/${username}`;
+                try {
+                    const response = await fetch(`/join/${roomId}/${username}`);
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+						showErrorModal("Failed to join room. Please try again.");
+					}
+                } catch (error) {
+					showErrorModal("Error: " + error.message);
+				}
             } else {
-                alert("Please enter valid inputs:\n- Username: 4-12 characters, only letters and numbers\n- Room ID: 8-16 characters, only letters and numbers");
-            }
+				showErrorModal("Please enter valid inputs: Username 4-12, Room ID 8-16 characters, only letters and numbers");
+			}
         }
+		
+		function getQueryParam(name) {
+			const urlParams = new URLSearchParams(window.location.search);
+			return urlParams.get(name);
+		}
+
+		function showErrorModal(message) {
+			document.getElementById("error-message").textContent = message;
+			document.getElementById("error-modal").classList.remove("hidden");
+		}
+
+		function closeModal() {
+			document.getElementById("error-modal").classList.add("hidden");
+			window.history.replaceState({}, document.title, window.location.pathname);
+		}
+
+		document.addEventListener("DOMContentLoaded", () => {
+			const errorType = getQueryParam("error");
+			if (errorType === "invalid_room") {
+				showErrorModal("Invalid room or username. Please try again.");
+			}
+		});
     </script>
 </body>
 </html>
