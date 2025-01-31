@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "npm run build:css && node app.js",
-    "dev": "concurrently \"npm run watch:css\" \"nodemon app.js\"",
+    "start": "npm run build:css && node server.js",
+    "dev": "concurrently \"npm run watch:css\" \"nodemon server.js\"",
     "build:css": "npx postcss public/assets/css/tailwind.css -o public/assets/css/styles.css",
     "watch:css": "npx postcss public/assets/css/tailwind.css -o public/assets/css/styles.css --watch"
   },
